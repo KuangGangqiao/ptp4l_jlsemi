@@ -22,6 +22,7 @@
 
 #include "clockcheck.h"
 #include "print.h"
+#include "test.h"
 
 #define CHECK_MIN_INTERVAL 1000000000
 #define CHECK_MAX_FREQ 900000000
@@ -67,6 +68,9 @@ int clockcheck_sample(struct clockcheck *cc, uint64_t ts)
 	struct timespec now;
 	int ret = 0;
 
+#if CLOCKCHECK
+	fprintf(stderr, "%s\n", __func__);
+#endif
 	/* Check the sanity of the synchronized clock by comparing its
 	   uncorrected frequency with the system monotonic clock. If
 	   the synchronized clock is the system clock, the measured
@@ -95,6 +99,12 @@ int clockcheck_sample(struct clockcheck *cc, uint64_t ts)
 				     (1.0 + cc->max_freq / 1e9) /
 				     mono_interval - 1.0);
 
+#if CLOCKCHECK
+		fprintf(stderr, "cc->max_freq: %d\n", cc->max_freq);
+		fprintf(stderr, "cc->last_ts: %ld\n", cc->last_ts);
+		fprintf(stderr, "min_foffset: %f\n", min_foffset);
+		fprintf(stderr, "cc->freq_limit: %d\n", cc->freq_limit);
+#endif
 		if (min_foffset > cc->freq_limit) {
 			pr_warning("clockcheck: clock jumped forward or"
 					" running faster than expected!");

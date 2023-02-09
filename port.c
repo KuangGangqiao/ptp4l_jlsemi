@@ -396,6 +396,7 @@ void ts_add(tmv_t *ts, Integer64 correction)
 {
 #if PORT
 	fprintf(stderr, "%s\n", __func__);
+	fprintf(stderr, "ts add correction: %ld\n", correction);
 #endif
 	if (!correction) {
 		return;
@@ -2474,6 +2475,9 @@ static void port_peer_delay(struct port *p)
 	t1 = req->hwts.ts;
 	t4 = rsp->hwts.ts;
 	c1 = correction_to_tmv(rsp->header.correction + p->asymmetry);
+#if FIX_CORRECTION
+	c1.ns <<= 16;
+#endif
 #if PORT
 	fprintf(stderr, "dep-time req->hwts.ts: %ld\n", t1.ns);
 	fprintf(stderr, "arr-time rsp->hwts.ts: %ld\n", t4.ns);
